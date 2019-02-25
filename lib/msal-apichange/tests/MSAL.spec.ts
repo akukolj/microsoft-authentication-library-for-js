@@ -427,10 +427,7 @@ describe('Msal', function (): any {
 
         try {
             msal.getCachedToken({ authority: validAuthority, scopes: ['S1'] }, user);
-            // console.log("NO ERR");
         } catch (err) {
-            // console.log("Catching CACHE ERROR");
-            console.log(err);
             mmAccessTokenErr = err;
         }
 
@@ -731,7 +728,6 @@ describe('Msal', function (): any {
 
         var _promptUser = msal.promptUser;
         msal.promptUser = function () {
-            console.log(document.cookie);
             expect(document.cookie).toContain(Constants.stateLogin);
             expect(document.cookie).toContain(Constants.nonceIdToken);
             expect(document.cookie).toContain(Constants.loginRequest);

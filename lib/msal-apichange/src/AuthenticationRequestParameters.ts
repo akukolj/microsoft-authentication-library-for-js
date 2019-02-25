@@ -27,11 +27,12 @@ import { Constants } from "./Constants";
 
 /**
  * Class to construct the Request to be sent to the Auth Server for Authentication/Authorization
- * 
+ *
  * @hidden
  */
 export class AuthenticationRequestParameters {
 
+  // TODO: Remove unused parameters
   authorityInstance: Authority;
   clientId: string;
   nonce: string;
@@ -59,13 +60,13 @@ export class AuthenticationRequestParameters {
     this.scopes = scope;
     this.responseType = responseType;
     this.redirectUri = redirectUri;
-  
+
     // randomly generated values
     // TODO: expand on CorrelationID, State and Nonce here and in documentation, may be add a link?
     this.correlationId = Utils.createNewGuid();
     this.state = state && !Utils.isEmpty(state) ? Utils.createNewGuid() + "|" + state : Utils.createNewGuid();
     this.nonce = Utils.createNewGuid();
-    
+
     // telemetry information
     // TODO: expand why we need this
     this.xClientSku = "MSAL.JS";
@@ -74,7 +75,7 @@ export class AuthenticationRequestParameters {
 
   /**
    * Construct Navigate URL from scopes
-   * @param scopes 
+   * @param scopes
    */
   createNavigateUrl(scopes: Array<string>): string {
 
@@ -94,7 +95,7 @@ export class AuthenticationRequestParameters {
 
   /**
    * Add the query string with appropriate values to the navigate URL
-   * @param scopes 
+   * @param scopes
    */
   createNavigationUrlString(scopes: Array<string>): Array<string> {
 
@@ -134,7 +135,7 @@ export class AuthenticationRequestParameters {
 
   /**
    * Add default OpenID scopes 'openid' and 'profile'
-   * @param scopes 
+   * @param scopes
    */
   translateclientIdUsedInScope(scopes: Array<string>): void {
     const clientIdIndex: number = scopes.indexOf(this.clientId);
@@ -151,7 +152,7 @@ export class AuthenticationRequestParameters {
 
   /**
    * Parse Scopes into an array List to return
-   * @param scopes 
+   * @param scopes
    */
   parseScope(scopes: Array<string>): string {
     let scopeList: string = "";
