@@ -38,6 +38,7 @@ import { Utils } from "./Utils";
 import { AuthorityFactory } from "./AuthorityFactory";
 import { TConfiguration } from "./Configuration";
 import * as MSALError from "./AuthError";
+import { isRegExp } from 'util';
 
 
 // TODO: move this when Constants are refactored
@@ -636,10 +637,8 @@ export class UserAgentApplication {
             // silent login if ADAL id_token is retrieved successfully - SSO
             if (idTokenObject && !scopes) {
                 this.pConfig.system.logger.info("ADAL's idToken exists. Extracting login information from ADAL's idToken ");
-                if (sid) {
-                    extraQueryParameters = Utils.constructUnifiedCacheExtraQueryParameter(idTokenObject, extraQueryParameters);
-                }
-
+                extraQueryParameters = Utils.constructUnifiedCacheExtraQueryParameter(idTokenObject, extraQueryParameters);
+                
                 this.pSilentLogin = true;
                 this.acquireTokenSilent([this.pConfig.auth.clientId], this.authority, this.getUser(), extraQueryParameters)
                     .then((idToken) => {
@@ -1146,9 +1145,17 @@ export class UserAgentApplication {
 
             let authenticationRequest: AuthenticationRequestParameters;
             let responseType;
-            responseType = (Utils.compareObjects(userObject, this.getUser())) ? ResponseTypes.id_token : ResponseTypes.id_token_token;
-            responseType = (scopes.indexOf(this.pConfig.auth.clientId) > -1) ? ResponseTypes.id_token : ResponseTypes.token;
-
+            
+            // if user is passed and matches the user object/or set to getUser() from cache
+            if (Utils.compareObjects(userObject, this.getUser())) {
+              // if client-id is passed as scope, get id_token else token
+              responseType = (scopes.indexOf(this.pConfig.auth.clientId) > -1) ? ResponseTypes.id_token : ResponseTypes.token;
+            }
+            else {
+              // if client-id is passed as scope, get id_token else id_token_token (as no user session exists)
+              responseType = (scopes.indexOf(this.pConfig.auth.clientId) > -1) ? ResponseTypes.id_token : ResponseTypes.id_token_token;
+            }
+   
             authenticationRequest = new AuthenticationRequestParameters(
                 AuthorityFactory.CreateInstance(authority, this.pConfig.auth.validateAuthority),
                 this.pConfig.auth.clientId,
@@ -1157,6 +1164,7 @@ export class UserAgentApplication {
                 this.getRedirectUri(),
                 this.pConfig.auth.state
             );
+
             //const cacheResult = this.getCachedToken(authenticationRequest, userObject);
             var cacheResult;
             try {
@@ -1196,10 +1204,10 @@ export class UserAgentApplication {
             }
 
             // cache miss - renew the Token
-            // TODO: Grok this and see if this window specific code can be improved - it is complicated now
+            // TODO: Check if this window specific code can be improved - it is complicated now
             return authenticationRequest.authorityInstance.ResolveEndpointsAsync()
                 .then(() => {
-                    // refresh attept with iframe; Already renewing for this scope, callback when we get the token.
+                    // refresh attempt with iframe; Already renewing for this scope, callback when we get the token.
                     if (window.activeRenewals[scope]) {
                         this.pConfig.system.logger.verbose("Renew token for scope: " + scope + " is in progress. Registering callback");
 

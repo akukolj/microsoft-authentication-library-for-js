@@ -486,14 +486,9 @@ export class Utils {
      * @param login_hint
      * @param extraQueryParameters
      */
-    static constructUnifiedCacheExtraQueryParameter(idTokenObject: any, extraQueryParameters?: string, login_hint?: string) {
+    static constructUnifiedCacheExtraQueryParameter(idTokenObject: any, extraQueryParameters?: string) {
 
-        // if login_hint is sent as a part of the request, give developer priority the preference
-        if (login_hint) {
-            return extraQueryParameters += this.addLoginHint(login_hint, false);
-        }
-
-        // else extract the login_hint from the idToken; login_hint = idToken.upn
+        // extract the login_hint from the idToken; login_hint = idToken.upn
         if (idTokenObject) {
 
             // if upn is present in idToken, construct login_hint and domain_hint from the idToken
@@ -503,9 +498,9 @@ export class Utils {
                 extraQueryParameters = this.urlRemoveQueryStringParameter(extraQueryParameters, Constants.domain_hint);
 
                 if (extraQueryParameters) {
-                    extraQueryParameters += this.addLoginHint(idTokenObject.upn, false);
+                    extraQueryParameters += this.addHints(idTokenObject.upn, false);
                 } else {
-                    return extraQueryParameters = this.addLoginHint(idTokenObject.upn, false);
+                    return extraQueryParameters = this.addHints(idTokenObject.upn, false);
                 }
             }
             // since upn is not present in idToken, proceed with domain_hint
@@ -514,9 +509,9 @@ export class Utils {
                 extraQueryParameters = this.urlRemoveQueryStringParameter(extraQueryParameters, Constants.domain_hint);
 
                 if (extraQueryParameters) {
-                    return extraQueryParameters += this.addLoginHint(idTokenObject.upn, true);
+                    return extraQueryParameters += this.addHints(idTokenObject.upn, true);
                 } else {
-                    return extraQueryParameters = this.addLoginHint(idTokenObject.upn, true);
+                    return extraQueryParameters = this.addHints(idTokenObject.upn, true);
                 }
             }
         }
@@ -525,18 +520,32 @@ export class Utils {
     }
 
     /**
-     * Create acquireTokenUserKey to cache user object
+     * construct "login_hint/domain_hint" to be added to the extraQueryParams
      *
      * @param hint
      * @param onlyDomain
      */
-    static addLoginHint(hint: any, onlyDomain: boolean) {
+    static addHints(hint: any, onlyDomain: boolean) {
+
+        let hintParams: string;
+
         if (!onlyDomain) {
-            return `&login_hint=${hint}&domain_hint=organizations`;
+           hintParams = `&login_hint=${hint}&domain_hint=organizations`;
         }
         else {
-            return `&domain_hint=organizations`;
+            hintParams = `&domain_hint=organizations`;
         }
+
+        return encodeURIComponent(hintParams);
+    }
+
+    /**
+     * construct "sid" to be added to the extraQueryParams
+     * 
+     * @param sid 
+     */
+    static addSid(sid: string) {
+        return encodeURIComponent(`&sid=${sid}`);
     }
 
     /**
