@@ -44,18 +44,17 @@
     "grunt-jasmine-node": "~0.3.1",
     "grunt-tslint": "^5.0.1",
     "grunt-typedoc": "^0.2.4",
+    "handlebars": "^4.0.13",
     "istanbul-instrumenter-loader": "^3.0.1",
-    "jasmine": "^2.8.0",
+    "jasmine": "^3.3.1",
     "jasmine-ajax": "^3.3.1",
     "jasmine-core": "^2.5.2",
-    "jasmine-node": "^1.16.2",
     "jshint": "^2.9.7",
-    "karma": "^2.0.4",
+    "karma": "^4.0.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-cli": "^1.0.1",
-    "karma-coverage-istanbul-reporter": "^2.0.1",
+    "karma-coverage-istanbul-reporter": "^2.0.5",
     "karma-firefox-launcher": "~0.1",
-    "karma-html-reporter": "^0.2.7",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-ajax": "^0.1.13",
     "karma-phantomjs-launcher": "*",
@@ -63,7 +62,7 @@
     "karma-remap-istanbul": "^0.6.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "0.0.32",
-    "karma-typescript": "^3.0.13",
+    "karma-typescript": "^4.0.0",
     "karma-verbose-reporter": "0.0.6",
     "karma-webpack": "^4.0.0-rc.5",
     "phantomjs-polyfill": "0.0.2",
@@ -73,7 +72,6 @@
     "tslint": "^5.8.0",
     "typedoc": "^0.6.0",
     "typescript": "^2.5.3",
-    "typings": "^2.1.1",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-middleware": "^3.4.0"
@@ -86,6 +84,6 @@
     "doc": "typedoc --out ./docs ./src/**/* --gitRevision dev",
     "build:modules": "tsc && tsc -m es6 --outDir lib-es6",
     "build": "npm run clean && npm run doc && npm run build:modules && webpack && grunt && npm test",
-    "test": "karma start && jasmine-node --nohelpers tests/MSALSpec.js"
+    "test": "karma start && jasmine tests/MSALSpec.js"
   }
 }
